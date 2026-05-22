@@ -186,6 +186,17 @@ func translateBackendPolicyToAgw(
 		appendPolicy("backendExtAuth")(translateBackendExtAuth(ctx, policy))
 	}
 
+	if s := backend.ExtMCP; s != nil {
+		pol, err := processExtMcpPolicy(ctx, s, policyName, types.NamespacedName{Namespace: policy.Namespace, Name: policy.Name}, policyTarget)
+		if err != nil {
+			logger.Error("error processing backend ExtMCP", "err", err)
+			errs = append(errs, err)
+		}
+		if pol != nil {
+			agwPolicies = append(agwPolicies, pol)
+		}
+	}
+
 	return agwPolicies, errors.Join(errs...)
 }
 

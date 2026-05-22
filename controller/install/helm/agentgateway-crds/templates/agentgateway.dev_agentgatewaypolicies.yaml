@@ -4015,6 +4015,143 @@ spec:
                             maxProperties: 64
                             type: object
                         type: object
+                    required:
+                    - backendRef
+                    type: object
+                  extMCP:
+                    description: extMCP specifies the external MCP configuration for
+                      the backend policy.
+                    properties:
+                      backendRef:
+                        description: |-
+                          backendRef references the MCP server to reach.
+                          Supported types: Service and Backend.
+                        properties:
+                          group:
+                            default: ""
+                            description: |-
+                              Group is the group of the referent. For example, "gateway.networking.k8s.io".
+                              When unspecified or empty string, core API group is inferred.
+                            maxLength: 253
+                            pattern: ^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                            type: string
+                          kind:
+                            default: Service
+                            description: |-
+                              Kind is the Kubernetes resource kind of the referent. For example
+                              "Service".
+
+                              Defaults to "Service" when not specified.
+
+                              ExternalName services can refer to CNAME DNS records that may live
+                              outside of the cluster and as such are difficult to reason about in
+                              terms of conformance. They also may not be safe to forward to (see
+                              CVE-2021-25740 for more information). Implementations SHOULD NOT
+                              support ExternalName Services.
+
+                              Support: Core (Services with a type other than ExternalName)
+
+                              Support: Implementation-specific (Services with type ExternalName)
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$
+                            type: string
+                          name:
+                            description: Name is the name of the referent.
+                            maxLength: 253
+                            minLength: 1
+                            type: string
+                          namespace:
+                            description: |-
+                              Namespace is the namespace of the backend. When unspecified, the local
+                              namespace is inferred.
+
+                              Note that when a namespace different than the local namespace is specified,
+                              a ReferenceGrant object is required in the referent namespace to allow that
+                              namespace's owner to accept the reference. See the ReferenceGrant
+                              documentation for details.
+
+                              Support: Core
+                            maxLength: 63
+                            minLength: 1
+                            pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                            type: string
+                          port:
+                            description: |-
+                              Port specifies the destination port number to use for this resource.
+                              Port is required when the referent is a Kubernetes Service. In this
+                              case, the port number is the service port number, not the target port.
+                              For other resources, destination port might be derived from the referent
+                              resource or this field.
+                            format: int32
+                            maximum: 65535
+                            minimum: 1
+                            type: integer
+                        required:
+                        - name
+                        type: object
+                        x-kubernetes-validations:
+                        - message: Must have port for Service reference
+                          rule: '(size(self.group) == 0 && self.kind == ''Service'')
+                            ? has(self.port) : true'
+                      failureMode:
+                        allOf:
+                        - enum:
+                          - FailClosed
+                          - FailOpen
+                        - enum:
+                          - FailClosed
+                          - FailOpen
+                        default: FailClosed
+                        description: |-
+                          failureMode specifies the behavior when the external MCP processor fails or is unavailable.
+                          FailClosed (default): Reject requests when the processor is unavailable.
+                          FailOpen: Allow requests to proceed when the processor is unavailable.
+                        type: string
+                      metadataContext:
+                        additionalProperties:
+                          description: |-
+                            NamespacedMetadataContext represents a namespace containing metadata context for the external MCP processor.
+                            This allows organizing metadata into logical groups for better organization and processing.
+                          properties:
+                            context:
+                              additionalProperties:
+                                description: CELExpression represents a Common Expression
+                                  Language (CEL) expression.
+                                maxLength: 16384
+                                minLength: 1
+                                type: string
+                              description: |-
+                                context specifies the metadata key-value pairs within this namespace.
+                                Each value is a CEL expression that can access request context including JWT claims.
+
+                                Example:
+                                  user_id: 'jwt.sub'
+                                  role: 'jwt.role'
+                                  request_id: 'request.headers["x-request-id"]'
+                              maxProperties: 64
+                              type: object
+                          required:
+                          - context
+                          type: object
+                        description: |-
+                          metadataContext specifies namespaced metadata to pass to the external MCP processor.
+                          Each namespace can contain multiple metadata key-value pairs where values are CEL expressions
+                          that can access request context including JWT claims.
+
+                          Example:
+                            auth:
+                              context:
+                                user_id: 'jwt.sub'
+                                role: 'jwt.role'
+                            request:
+                              context:
+                                request_id: 'request.headers["x-request-id"]'
+                                path: 'request.path'
+                        maxProperties: 64
+                        type: object
+                    required:
+                    - backendRef
                     type: object
                   health:
                     description: health defines settings for passive and active health
@@ -4836,9 +4973,9 @@ spec:
                     type: object
                 type: object
                 x-kubernetes-validations:
-                - message: at least one of the fields in [ai auth extAuth health http
-                    mcp tcp tls transformation tunnel] must be set
-                  rule: '[has(self.ai),has(self.auth),has(self.extAuth),has(self.health),has(self.http),has(self.mcp),has(self.tcp),has(self.tls),has(self.transformation),has(self.tunnel)].filter(x,x==true).size()
+                - message: at least one of the fields in [ai auth extAuth extMCP health
+                    http mcp tcp tls transformation tunnel] must be set
+                  rule: '[has(self.ai),has(self.auth),has(self.extAuth),has(self.extMCP),has(self.health),has(self.http),has(self.mcp),has(self.tcp),has(self.tls),has(self.transformation),has(self.tunnel)].filter(x,x==true).size()
                     >= 1'
               frontend:
                 description: |-

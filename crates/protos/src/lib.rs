@@ -73,3 +73,9 @@ pub mod agent {
 pub mod workload {
 	pub use crate::istio::workload::*;
 }
+
+#[allow(warnings)]
+#[allow(clippy::derive_partial_eq_without_eq)]
+pub mod model_context_protocol {
+	tonic::include_proto!("model_context_protocol");
+}

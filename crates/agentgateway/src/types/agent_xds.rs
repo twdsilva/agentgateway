@@ -1503,6 +1503,41 @@ fn backend_policy_from_proto(
 			BackendTrafficPolicy::RequestMirror(mirrors)
 		},
 		Some(bps::Kind::Health(h)) => BackendTrafficPolicy::Health(convert_health(h, diagnostics)),
+		Some(bps::Kind::ExtMcp(em)) => {
+			let target = resolve_simple_reference(em.target.as_ref());
+			let failure_mode = match bps::ext_mcp::FailureMode::try_from(em.failure_mode) {
+				Ok(bps::ext_mcp::FailureMode::FailOpen) => crate::http::ext_proc::FailureMode::FailOpen,
+				_ => crate::http::ext_proc::FailureMode::FailClosed,
+			};
+			// Use nested metadata_context structure like ExtProc
+			let metadata = if em.metadata_context.is_empty() {
+				None
+			} else {
+				Some(
+					em.metadata_context
+						.iter()
+						.fold(HashMap::new(), |mut meta, (namespace, data)| {
+							meta.insert(
+								namespace.to_string(),
+								data
+									.context
+									.iter()
+									.map(|(k, v)| {
+										let (expr, _) = cel::Expression::new_permissive(v);
+										(k.clone(), Arc::new(expr))
+									})
+									.collect::<HashMap<String, Arc<cel::Expression>>>(),
+							);
+							meta
+						}),
+				)
+			};
+			BackendTrafficPolicy::ExtMcp(crate::mcp::ext_mcp::ExtMcp {
+				target: Arc::new(target),
+				failure_mode,
+				metadata_context: metadata,
+			})
+		},
 		None => return Err(ProtoError::MissingRequiredField),
 	})
 }

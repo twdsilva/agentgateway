@@ -13,6 +13,7 @@ use rmcp::transport::TokioChildProcess;
 use thiserror::Error;
 use tokio::process::Command;
 
+use crate::http::jwt::Claims;
 use crate::mcp::mergestream::Messages;
 use crate::mcp::router::{McpBackendGroup, McpTarget};
 use crate::mcp::streamablehttp::StreamableHttpPostResponse;
@@ -79,6 +80,23 @@ impl IncomingRequestContext {
 			Ok(())
 		})
 	}
+
+	pub fn header_map(&self) -> std::collections::HashMap<String, String> {
+		self
+			.headers
+			.iter()
+			.map(|(name, value)| {
+				(
+					name.as_str().to_string(),
+					value.to_str().unwrap_or("").to_string(),
+				)
+			})
+			.collect()
+	}
+
+	pub fn claims(&self) -> Option<&Claims> {
+		self.ext.get::<Claims>()
+	}
 }
 
 #[derive(Debug, Error)]
@@ -108,6 +126,8 @@ pub enum UpstreamError {
 	Send,
 	#[error("upstream closed on receive")]
 	Recv,
+	#[error("external mcp process failed")]
+	ExternalMcpProcessFailed,
 }
 
 // UpstreamTarget defines a source for MCP information.

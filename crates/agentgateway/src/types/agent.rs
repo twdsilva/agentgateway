@@ -29,7 +29,7 @@ use crate::http::{
 	HeaderOrPseudo, HeaderValue, ext_authz, ext_proc, filters, health, remoteratelimit, retry,
 	timeout,
 };
-use crate::mcp::{FailureMode, McpAuthorization};
+use crate::mcp::{FailureMode, McpAuthorization, ext_mcp};
 use crate::store::RequestPolicy;
 use crate::telemetry::log::OrderedStringMap;
 use crate::transport::tls;
@@ -2318,6 +2318,7 @@ pub enum TrafficPolicy {
 pub enum BackendTrafficPolicy {
 	McpAuthorization(McpAuthorization),
 	McpAuthentication(McpAuthentication),
+	ExtMcp(ext_mcp::ExtMcp),
 	A2a(A2aPolicy),
 	#[serde(rename = "http")]
 	HTTP(backend::HTTP),

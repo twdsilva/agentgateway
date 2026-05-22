@@ -1857,6 +1857,16 @@
 |`binds[].listeners[].routes[].policies.extProc.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].routes[].policies.extProc.requestAttributes`|object|Maps to the request `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].routes[].policies.extProc.responseAttributes`|object|Maps to the response `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
+|`binds[].listeners[].routes[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`binds[].listeners[].routes[].policies.extMcp.service`|object||
+|`binds[].listeners[].routes[].policies.extMcp.service.name`|object||
+|`binds[].listeners[].routes[].policies.extMcp.service.name.namespace`|string||
+|`binds[].listeners[].routes[].policies.extMcp.service.name.hostname`|string||
+|`binds[].listeners[].routes[].policies.extMcp.service.port`|integer||
+|`binds[].listeners[].routes[].policies.extMcp.host`|string|Hostname or IP address|
+|`binds[].listeners[].routes[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`binds[].listeners[].routes[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`binds[].listeners[].routes[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].routes[].policies.transformations`|object|Modify requests and responses|
 |`binds[].listeners[].routes[].policies.transformations.conditional`|[]object|conditional policy entries. An entry without a condition must be the final fallback.|
 |`binds[].listeners[].routes[].policies.transformations.conditional[].condition`|string|condition must evaluate to true for this policy to execute. If unset, the policy is the fallback.|
@@ -2030,6 +2040,16 @@
 |`binds[].listeners[].routes[].backends[].mcp.targets[].policies.backendTunnel.proxy.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
 |`binds[].listeners[].routes[].backends[].mcp.targets[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`binds[].listeners[].routes[].backends[].mcp.targets[].policies.mcpAuthorization.rules`|[]string||
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.service`|object||
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.service.name`|object||
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.service.name.namespace`|string||
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.service.name.hostname`|string||
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.service.port`|integer||
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.host`|string|Hostname or IP address|
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`binds[].listeners[].routes[].backends[].mcp.targets[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].routes[].backends[].mcp.statefulMode`|enum|Possible values: `stateless`, `stateful`.|
 |`binds[].listeners[].routes[].backends[].mcp.prefixMode`|enum|Possible values: `always`, `conditional`, `null`.|
 |`binds[].listeners[].routes[].backends[].mcp.failureMode`|enum|Behavior when one or more MCP targets fail to initialize or fail during fanout.<br>Defaults to `failClosed`.<br>Possible values: `failClosed`, `failOpen`.|
@@ -2311,6 +2331,16 @@
 |`binds[].listeners[].routes[].backends[].ai.policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`binds[].listeners[].routes[].backends[].ai.policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`binds[].listeners[].routes[].backends[].ai.policies.mcpAuthorization.rules`|[]string||
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.service`|object||
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.service.name`|object||
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.service.name.namespace`|string||
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.service.name.hostname`|string||
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.service.port`|integer||
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.host`|string|Hostname or IP address|
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`binds[].listeners[].routes[].backends[].ai.policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].routes[].backends[].ai.policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`binds[].listeners[].routes[].backends[].ai.policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`binds[].listeners[].routes[].backends[].ai.policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -3411,6 +3441,16 @@
 |`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.mcpAuthorization.rules`|[]string||
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service`|object||
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.name`|object||
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.name.namespace`|string||
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.name.hostname`|string||
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.port`|integer||
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.host`|string|Hostname or IP address|
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`binds[].listeners[].routes[].backends[].ai.groups[].providers[].policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -4486,6 +4526,16 @@
 |`binds[].listeners[].routes[].backends[].policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`binds[].listeners[].routes[].backends[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`binds[].listeners[].routes[].backends[].policies.mcpAuthorization.rules`|[]string||
+|`binds[].listeners[].routes[].backends[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`binds[].listeners[].routes[].backends[].policies.extMcp.service`|object||
+|`binds[].listeners[].routes[].backends[].policies.extMcp.service.name`|object||
+|`binds[].listeners[].routes[].backends[].policies.extMcp.service.name.namespace`|string||
+|`binds[].listeners[].routes[].backends[].policies.extMcp.service.name.hostname`|string||
+|`binds[].listeners[].routes[].backends[].policies.extMcp.service.port`|integer||
+|`binds[].listeners[].routes[].backends[].policies.extMcp.host`|string|Hostname or IP address|
+|`binds[].listeners[].routes[].backends[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`binds[].listeners[].routes[].backends[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`binds[].listeners[].routes[].backends[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].routes[].backends[].policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`binds[].listeners[].routes[].backends[].policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`binds[].listeners[].routes[].backends[].policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -5871,6 +5921,16 @@
 |`binds[].listeners[].policies.extProc.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].policies.extProc.requestAttributes`|object|Maps to the request `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].policies.extProc.responseAttributes`|object|Maps to the response `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
+|`binds[].listeners[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`binds[].listeners[].policies.extMcp.service`|object||
+|`binds[].listeners[].policies.extMcp.service.name`|object||
+|`binds[].listeners[].policies.extMcp.service.name.namespace`|string||
+|`binds[].listeners[].policies.extMcp.service.name.hostname`|string||
+|`binds[].listeners[].policies.extMcp.service.port`|integer||
+|`binds[].listeners[].policies.extMcp.host`|string|Hostname or IP address|
+|`binds[].listeners[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`binds[].listeners[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`binds[].listeners[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`binds[].listeners[].policies.transformations`|object|Modify requests and responses|
 |`binds[].listeners[].policies.transformations.conditional`|[]object|conditional policy entries. An entry without a condition must be the final fallback.|
 |`binds[].listeners[].policies.transformations.conditional[].condition`|string|condition must evaluate to true for this policy to execute. If unset, the policy is the fallback.|
@@ -7972,6 +8032,16 @@
 |`policies[].policy.extProc.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`policies[].policy.extProc.requestAttributes`|object|Maps to the request `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`policies[].policy.extProc.responseAttributes`|object|Maps to the response `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
+|`policies[].policy.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`policies[].policy.extMcp.service`|object||
+|`policies[].policy.extMcp.service.name`|object||
+|`policies[].policy.extMcp.service.name.namespace`|string||
+|`policies[].policy.extMcp.service.name.hostname`|string||
+|`policies[].policy.extMcp.service.port`|integer||
+|`policies[].policy.extMcp.host`|string|Hostname or IP address|
+|`policies[].policy.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`policies[].policy.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`policies[].policy.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`policies[].policy.transformations`|object|Modify requests and responses|
 |`policies[].policy.transformations.conditional`|[]object|conditional policy entries. An entry without a condition must be the final fallback.|
 |`policies[].policy.transformations.conditional[].condition`|string|condition must evaluate to true for this policy to execute. If unset, the policy is the fallback.|
@@ -8140,6 +8210,16 @@
 |`backends[].mcp.targets[].policies.backendTunnel.proxy.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
 |`backends[].mcp.targets[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`backends[].mcp.targets[].policies.mcpAuthorization.rules`|[]string||
+|`backends[].mcp.targets[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`backends[].mcp.targets[].policies.extMcp.service`|object||
+|`backends[].mcp.targets[].policies.extMcp.service.name`|object||
+|`backends[].mcp.targets[].policies.extMcp.service.name.namespace`|string||
+|`backends[].mcp.targets[].policies.extMcp.service.name.hostname`|string||
+|`backends[].mcp.targets[].policies.extMcp.service.port`|integer||
+|`backends[].mcp.targets[].policies.extMcp.host`|string|Hostname or IP address|
+|`backends[].mcp.targets[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`backends[].mcp.targets[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`backends[].mcp.targets[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`backends[].mcp.statefulMode`|enum|Possible values: `stateless`, `stateful`.|
 |`backends[].mcp.prefixMode`|enum|Possible values: `always`, `conditional`, `null`.|
 |`backends[].mcp.failureMode`|enum|Behavior when one or more MCP targets fail to initialize or fail during fanout.<br>Defaults to `failClosed`.<br>Possible values: `failClosed`, `failOpen`.|
@@ -8421,6 +8501,16 @@
 |`backends[].ai.policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`backends[].ai.policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`backends[].ai.policies.mcpAuthorization.rules`|[]string||
+|`backends[].ai.policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`backends[].ai.policies.extMcp.service`|object||
+|`backends[].ai.policies.extMcp.service.name`|object||
+|`backends[].ai.policies.extMcp.service.name.namespace`|string||
+|`backends[].ai.policies.extMcp.service.name.hostname`|string||
+|`backends[].ai.policies.extMcp.service.port`|integer||
+|`backends[].ai.policies.extMcp.host`|string|Hostname or IP address|
+|`backends[].ai.policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`backends[].ai.policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`backends[].ai.policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`backends[].ai.policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`backends[].ai.policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`backends[].ai.policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -9521,6 +9611,16 @@
 |`backends[].ai.groups[].providers[].policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`backends[].ai.groups[].providers[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`backends[].ai.groups[].providers[].policies.mcpAuthorization.rules`|[]string||
+|`backends[].ai.groups[].providers[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`backends[].ai.groups[].providers[].policies.extMcp.service`|object||
+|`backends[].ai.groups[].providers[].policies.extMcp.service.name`|object||
+|`backends[].ai.groups[].providers[].policies.extMcp.service.name.namespace`|string||
+|`backends[].ai.groups[].providers[].policies.extMcp.service.name.hostname`|string||
+|`backends[].ai.groups[].providers[].policies.extMcp.service.port`|integer||
+|`backends[].ai.groups[].providers[].policies.extMcp.host`|string|Hostname or IP address|
+|`backends[].ai.groups[].providers[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`backends[].ai.groups[].providers[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`backends[].ai.groups[].providers[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`backends[].ai.groups[].providers[].policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`backends[].ai.groups[].providers[].policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`backends[].ai.groups[].providers[].policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -10595,6 +10695,16 @@
 |`backends[].policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`backends[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`backends[].policies.mcpAuthorization.rules`|[]string||
+|`backends[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`backends[].policies.extMcp.service`|object||
+|`backends[].policies.extMcp.service.name`|object||
+|`backends[].policies.extMcp.service.name.namespace`|string||
+|`backends[].policies.extMcp.service.name.hostname`|string||
+|`backends[].policies.extMcp.service.port`|integer||
+|`backends[].policies.extMcp.host`|string|Hostname or IP address|
+|`backends[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`backends[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`backends[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`backends[].policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`backends[].policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`backends[].policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -13194,6 +13304,16 @@
 |`routeGroups[].routes[].policies.extProc.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`routeGroups[].routes[].policies.extProc.requestAttributes`|object|Maps to the request `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`routeGroups[].routes[].policies.extProc.responseAttributes`|object|Maps to the response `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
+|`routeGroups[].routes[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`routeGroups[].routes[].policies.extMcp.service`|object||
+|`routeGroups[].routes[].policies.extMcp.service.name`|object||
+|`routeGroups[].routes[].policies.extMcp.service.name.namespace`|string||
+|`routeGroups[].routes[].policies.extMcp.service.name.hostname`|string||
+|`routeGroups[].routes[].policies.extMcp.service.port`|integer||
+|`routeGroups[].routes[].policies.extMcp.host`|string|Hostname or IP address|
+|`routeGroups[].routes[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`routeGroups[].routes[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`routeGroups[].routes[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`routeGroups[].routes[].policies.transformations`|object|Modify requests and responses|
 |`routeGroups[].routes[].policies.transformations.conditional`|[]object|conditional policy entries. An entry without a condition must be the final fallback.|
 |`routeGroups[].routes[].policies.transformations.conditional[].condition`|string|condition must evaluate to true for this policy to execute. If unset, the policy is the fallback.|
@@ -13367,6 +13487,16 @@
 |`routeGroups[].routes[].backends[].mcp.targets[].policies.backendTunnel.proxy.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
 |`routeGroups[].routes[].backends[].mcp.targets[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`routeGroups[].routes[].backends[].mcp.targets[].policies.mcpAuthorization.rules`|[]string||
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.service`|object||
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.service.name`|object||
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.service.name.namespace`|string||
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.service.name.hostname`|string||
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.service.port`|integer||
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.host`|string|Hostname or IP address|
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`routeGroups[].routes[].backends[].mcp.targets[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`routeGroups[].routes[].backends[].mcp.statefulMode`|enum|Possible values: `stateless`, `stateful`.|
 |`routeGroups[].routes[].backends[].mcp.prefixMode`|enum|Possible values: `always`, `conditional`, `null`.|
 |`routeGroups[].routes[].backends[].mcp.failureMode`|enum|Behavior when one or more MCP targets fail to initialize or fail during fanout.<br>Defaults to `failClosed`.<br>Possible values: `failClosed`, `failOpen`.|
@@ -13648,6 +13778,16 @@
 |`routeGroups[].routes[].backends[].ai.policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`routeGroups[].routes[].backends[].ai.policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`routeGroups[].routes[].backends[].ai.policies.mcpAuthorization.rules`|[]string||
+|`routeGroups[].routes[].backends[].ai.policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.service`|object||
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.service.name`|object||
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.service.name.namespace`|string||
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.service.name.hostname`|string||
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.service.port`|integer||
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.host`|string|Hostname or IP address|
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`routeGroups[].routes[].backends[].ai.policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`routeGroups[].routes[].backends[].ai.policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`routeGroups[].routes[].backends[].ai.policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`routeGroups[].routes[].backends[].ai.policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -14748,6 +14888,16 @@
 |`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.mcpAuthorization.rules`|[]string||
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service`|object||
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.name`|object||
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.name.namespace`|string||
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.name.hostname`|string||
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.service.port`|integer||
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.host`|string|Hostname or IP address|
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`routeGroups[].routes[].backends[].ai.groups[].providers[].policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -15823,6 +15973,16 @@
 |`routeGroups[].routes[].backends[].policies.extAuthz.includeRequestBody.packAsBytes`|boolean|If true, pack body as raw bytes in gRPC|
 |`routeGroups[].routes[].backends[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`routeGroups[].routes[].backends[].policies.mcpAuthorization.rules`|[]string||
+|`routeGroups[].routes[].backends[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`routeGroups[].routes[].backends[].policies.extMcp.service`|object||
+|`routeGroups[].routes[].backends[].policies.extMcp.service.name`|object||
+|`routeGroups[].routes[].backends[].policies.extMcp.service.name.namespace`|string||
+|`routeGroups[].routes[].backends[].policies.extMcp.service.name.hostname`|string||
+|`routeGroups[].routes[].backends[].policies.extMcp.service.port`|integer||
+|`routeGroups[].routes[].backends[].policies.extMcp.host`|string|Hostname or IP address|
+|`routeGroups[].routes[].backends[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`routeGroups[].routes[].backends[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`routeGroups[].routes[].backends[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`routeGroups[].routes[].backends[].policies.a2a`|object|Mark this traffic as A2A to enable A2A processing and telemetry.|
 |`routeGroups[].routes[].backends[].policies.inferenceRouting`|object|Route requests through an endpoint picker before forwarding to the selected backend.|
 |`routeGroups[].routes[].backends[].policies.inferenceRouting.endpointPicker`|object|Exactly one of service, host, or backend may be set.|
@@ -18069,6 +18229,16 @@
 |`llm.policies.extProc.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`llm.policies.extProc.requestAttributes`|object|Maps to the request `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`llm.policies.extProc.responseAttributes`|object|Maps to the response `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
+|`llm.policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`llm.policies.extMcp.service`|object||
+|`llm.policies.extMcp.service.name`|object||
+|`llm.policies.extMcp.service.name.namespace`|string||
+|`llm.policies.extMcp.service.name.hostname`|string||
+|`llm.policies.extMcp.service.port`|integer||
+|`llm.policies.extMcp.host`|string|Hostname or IP address|
+|`llm.policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`llm.policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`llm.policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`llm.policies.transformations`|object|Modify requests and responses|
 |`llm.policies.transformations.conditional`|[]object|conditional policy entries. An entry without a condition must be the final fallback.|
 |`llm.policies.transformations.conditional[].condition`|string|condition must evaluate to true for this policy to execute. If unset, the policy is the fallback.|
@@ -18379,6 +18549,16 @@
 |`mcp.targets[].policies.backendTunnel.proxy.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
 |`mcp.targets[].policies.mcpAuthorization`|object|Authorization policies for MCP access.|
 |`mcp.targets[].policies.mcpAuthorization.rules`|[]string||
+|`mcp.targets[].policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`mcp.targets[].policies.extMcp.service`|object||
+|`mcp.targets[].policies.extMcp.service.name`|object||
+|`mcp.targets[].policies.extMcp.service.name.namespace`|string||
+|`mcp.targets[].policies.extMcp.service.name.hostname`|string||
+|`mcp.targets[].policies.extMcp.service.port`|integer||
+|`mcp.targets[].policies.extMcp.host`|string|Hostname or IP address|
+|`mcp.targets[].policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`mcp.targets[].policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`mcp.targets[].policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`mcp.statefulMode`|enum|Possible values: `stateless`, `stateful`.|
 |`mcp.prefixMode`|enum|Possible values: `always`, `conditional`, `null`.|
 |`mcp.failureMode`|enum|Behavior when one or more MCP targets fail to initialize or fail during fanout.<br>Defaults to `failClosed`.<br>Possible values: `failClosed`, `failOpen`.|
@@ -20137,6 +20317,16 @@
 |`mcp.policies.extProc.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`mcp.policies.extProc.requestAttributes`|object|Maps to the request `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`mcp.policies.extProc.responseAttributes`|object|Maps to the response `attributes` field in ProcessingRequest, and allows dynamic CEL expressions.|
+|`mcp.policies.extMcp`|object|Extend agentgateway with an MCP external processor|
+|`mcp.policies.extMcp.service`|object||
+|`mcp.policies.extMcp.service.name`|object||
+|`mcp.policies.extMcp.service.name.namespace`|string||
+|`mcp.policies.extMcp.service.name.hostname`|string||
+|`mcp.policies.extMcp.service.port`|integer||
+|`mcp.policies.extMcp.host`|string|Hostname or IP address|
+|`mcp.policies.extMcp.backend`|string|Explicit backend reference. Backend must be defined in the top level backends list|
+|`mcp.policies.extMcp.failureMode`|enum|Possible values: `failClosed`, `failOpen`.|
+|`mcp.policies.extMcp.metadataContext`|object|Additional metadata to send to the external processing service.<br>Maps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.|
 |`mcp.policies.transformations`|object|Modify requests and responses|
 |`mcp.policies.transformations.conditional`|[]object|conditional policy entries. An entry without a condition must be the final fallback.|
 |`mcp.policies.transformations.conditional[].condition`|string|condition must evaluate to true for this policy to execute. If unset, the policy is the fallback.|

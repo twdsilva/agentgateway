@@ -42,6 +42,7 @@ import (
 const (
 	extauthPolicySuffix            = ":extauth"
 	extprocPolicySuffix            = ":extproc"
+	extmcpPolicySuffix             = ":extmcp"
 	rbacPolicySuffix               = ":rbac"
 	localRateLimitPolicySuffix     = ":rl-local"
 	globalRateLimitPolicySuffix    = ":rl-global"
@@ -1130,6 +1131,66 @@ func processExtProcTraffic(
 	}, backendErr
 }
 
+// processExtMcpPolicy processes ExtMCP configuration and creates corresponding agentgateway policies
+func processExtMcpPolicy(
+	ctx PolicyCtx,
+	extMcp *agentgateway.ExtMCP,
+	basePolicyName string,
+	policy types.NamespacedName,
+	policyTarget *api.PolicyTarget,
+) (*api.Policy, error) {
+	be, err := buildBackendRef(ctx, extMcp.BackendRef, policy.Namespace)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build extMCP: %v", err)
+	}
+
+	// Set failure mode based on user configuration
+	failureMode := api.BackendPolicySpec_ExtMcp_FAIL_CLOSED // default
+	if extMcp.FailureMode != nil && *extMcp.FailureMode == agentgateway.ExtMCPFailureModeFailOpen {
+		failureMode = api.BackendPolicySpec_ExtMcp_FAIL_OPEN
+	}
+
+	// Process metadata context from user configuration
+	metadataContext := make(map[string]*api.BackendPolicySpec_ExtMcp_NamespacedMetadataContext)
+	for namespace, nsContext := range extMcp.MetadataContext {
+		contextMap := make(map[string]string)
+		for key, celExpr := range nsContext.Context {
+			contextMap[key] = string(celExpr)
+		}
+		metadataContext[namespace] = &api.BackendPolicySpec_ExtMcp_NamespacedMetadataContext{
+			Context: contextMap,
+		}
+	}
+
+	spec := &api.BackendPolicySpec_ExtMcp{
+		Target:          be,
+		FailureMode:     failureMode,
+		MetadataContext: metadataContext,
+	}
+
+	extmcpPolicy := &api.Policy{
+		Key:    basePolicyName + extmcpPolicySuffix + attachmentName(policyTarget),
+		Name:   TypedResourceFromName(wellknown.AgentgatewayPolicyGVK.Kind, policy),
+		Target: policyTarget,
+		Kind: &api.Policy_Backend{
+			Backend: &api.BackendPolicySpec{
+				Kind: &api.BackendPolicySpec_ExtMcp_{
+					ExtMcp: spec,
+				},
+			},
+		},
+	}
+
+	logger.Info("generated ExtMCP policy",
+		"policy", basePolicyName,
+		"agentgateway_policy", extmcpPolicy.Name,
+		"target", policyTarget,
+		"failureMode", failureMode,
+		"metadataNamespaces", len(metadataContext))
+
+	return extmcpPolicy, nil
+}
+
 func phase(policyPhase *agentgateway.PolicyPhase) api.TrafficPolicySpec_PolicyPhase {
 	var phase api.TrafficPolicySpec_PolicyPhase
 	if policyPhase != nil {
@@ -1830,6 +1891,9 @@ func BackendReferencesFromBackendPolicy(s *agentgateway.BackendFull, app func(re
 	appTunnel(&s.BackendSimple)
 	if s.ExtAuth != nil && s.ExtAuth.BackendRef != nil {
 		app(*s.ExtAuth.BackendRef)
+	}
+	if s.ExtMCP != nil {
+		app(s.ExtMCP.BackendRef)
 	}
 	if s.MCP != nil && s.MCP.Authentication != nil {
 		app(s.MCP.Authentication.JWKS.BackendRef)

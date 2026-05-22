@@ -1,4 +1,5 @@
 pub(crate) mod auth;
+pub mod ext_mcp;
 mod handler;
 mod mergestream;
 mod rbac;

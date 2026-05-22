@@ -263,6 +263,9 @@ type BackendFull struct {
 	// sent to this backend.
 	// +optional
 	ExtAuth *ExtAuth `json:"extAuth,omitempty"`
+	// extMCP specifies the external MCP configuration for the backend policy.
+	// +optional
+	ExtMCP *ExtMCP `json:"extMCP,omitempty"`
 }
 
 // +kubebuilder:validation:MinLength=1
@@ -1623,6 +1626,63 @@ type ExtProcConditional struct {
 	// +required
 	// +kubebuilder:validation:XValidation:rule="has(self.backendRef)",message="backendRef is required"
 	Policy ExtProc `json:"policy"`
+}
+
+// +kubebuilder:validation:Enum=FailClosed;FailOpen
+type ExtMCPFailureMode string
+
+const (
+	// ExtMCPFailureModeFailClosed rejects requests when the external MCP processor is unavailable
+	ExtMCPFailureModeFailClosed ExtMCPFailureMode = "FailClosed"
+	// ExtMCPFailureModeFailOpen allows requests to proceed when the external MCP processor is unavailable
+	ExtMCPFailureModeFailOpen ExtMCPFailureMode = "FailOpen"
+)
+
+// NamespacedMetadataContext represents a namespace containing metadata context for the external MCP processor.
+// This allows organizing metadata into logical groups for better organization and processing.
+type NamespacedMetadataContext struct {
+	// context specifies the metadata key-value pairs within this namespace.
+	// Each value is a CEL expression that can access request context including JWT claims.
+	//
+	// Example:
+	//   user_id: 'jwt.sub'
+	//   role: 'jwt.role'
+	//   request_id: 'request.headers["x-request-id"]'
+	// +kubebuilder:validation:MaxProperties=64
+	// +required
+	Context map[string]shared.CELExpression `json:"context"`
+}
+
+type ExtMCP struct {
+	// backendRef references the MCP server to reach.
+	// Supported types: Service and Backend.
+	// +required
+	BackendRef gwv1.BackendObjectReference `json:"backendRef"`
+
+	// failureMode specifies the behavior when the external MCP processor fails or is unavailable.
+	// FailClosed (default): Reject requests when the processor is unavailable.
+	// FailOpen: Allow requests to proceed when the processor is unavailable.
+	// +kubebuilder:default=FailClosed
+	// +kubebuilder:validation:Enum=FailClosed;FailOpen
+	// +optional
+	FailureMode *ExtMCPFailureMode `json:"failureMode,omitempty"`
+
+	// metadataContext specifies namespaced metadata to pass to the external MCP processor.
+	// Each namespace can contain multiple metadata key-value pairs where values are CEL expressions
+	// that can access request context including JWT claims.
+	//
+	// Example:
+	//   auth:
+	//     context:
+	//       user_id: 'jwt.sub'
+	//       role: 'jwt.role'
+	//   request:
+	//     context:
+	//       request_id: 'request.headers["x-request-id"]'
+	//       path: 'request.path'
+	// +kubebuilder:validation:MaxProperties=64
+	// +optional
+	MetadataContext map[string]NamespacedMetadataContext `json:"metadataContext,omitempty"`
 }
 
 // +kubebuilder:validation:ConditionalPolicy:fields=backendRef

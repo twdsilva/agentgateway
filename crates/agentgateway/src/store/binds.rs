@@ -18,7 +18,7 @@ use crate::http::backendtls::BackendTLS;
 use crate::http::ext_proc::InferenceRouting;
 use crate::http::{ext_authz, ext_proc, filters, health, oidc, remoteratelimit, retry, timeout};
 use crate::llm::policy::ResponseGuard;
-use crate::mcp::McpAuthorizationSet;
+use crate::mcp::{McpAuthorizationSet, ext_mcp};
 use crate::proxy::dtrace;
 use crate::proxy::httpproxy::PolicyClient;
 use crate::store::{BackendPolicy, PolicyExpressions, RequestPolicy, ResponsePolicy};
@@ -204,6 +204,7 @@ pub struct BackendPolicies {
 
 	pub mcp_authorization: Option<McpAuthorizationSet>,
 	pub mcp_authentication: Option<McpAuthentication>,
+	pub ext_mcp: Option<ext_mcp::ExtMcp>,
 
 	pub http: Option<types::backend::HTTP>,
 	pub tcp: Option<types::backend::TCP>,
@@ -237,6 +238,7 @@ impl BackendPolicies {
 			// TODO: is this right??
 			mcp_authorization: other.mcp_authorization.or(self.mcp_authorization),
 			mcp_authentication: other.mcp_authentication.or(self.mcp_authentication),
+			ext_mcp: other.ext_mcp.or(self.ext_mcp),
 			inference_routing: other.inference_routing.or(self.inference_routing),
 			ext_authz: other.ext_authz.or(self.ext_authz),
 			http: other.http.or(self.http),
@@ -1003,6 +1005,9 @@ impl Store {
 				},
 				BackendTrafficPolicy::McpAuthentication(p) => {
 					pol.mcp_authentication.get_or_insert_with(|| p.clone());
+				},
+				BackendTrafficPolicy::ExtMcp(p) => {
+					pol.ext_mcp.get_or_insert_with(|| p.clone());
 				},
 			}
 		}

@@ -932,6 +932,8 @@ message TrafficPolicySpec {
     }
     map<string, NamespacedMetadataContext> metadata_context = 5;
   }
+
+
   enum PolicyPhase {
     ROUTE = 0;
     GATEWAY = 1;
@@ -1250,6 +1252,20 @@ message BackendPolicySpec {
     repeated string require = 3;
   }
 
+  message ExtMcp {
+    enum FailureMode {
+      FAIL_CLOSED = 0;
+      FAIL_OPEN = 1;
+    }
+    BackendReference target = 1;
+    FailureMode failure_mode = 2;
+    
+    message NamespacedMetadataContext {
+      map<string, string> context = 1;
+    }
+    map<string, NamespacedMetadataContext> metadata_context = 3;
+  }
+
   message McpAuthentication {
     message ResourceMetadata {
       map<string, google.protobuf.Value> extra = 1;
@@ -1303,6 +1319,7 @@ message BackendPolicySpec {
     Health health = 15;
     BackendTunnel backend_tunnel = 16;
     TrafficPolicySpec.ExternalAuth ext_authz = 17;
+    ExtMcp ext_mcp = 18;
   }
 }
 

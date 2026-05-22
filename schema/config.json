@@ -1343,6 +1343,18 @@
             }
           ]
         },
+        "extMcp": {
+          "description": "Extend agentgateway with an MCP external processor",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtMcp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "transformations": {
           "description": "Modify requests and responses",
           "anyOf": [
@@ -4861,6 +4873,90 @@
         }
       ]
     },
+    "ExtMcp": {
+      "type": "object",
+      "properties": {
+        "failureMode": {
+          "$ref": "#/$defs/FailureMode3",
+          "default": "failClosed"
+        },
+        "metadataContext": {
+          "description": "Additional metadata to send to the external processing service.\nMaps to the `metadata_context.filter_metadata` field in ProcessingRequest, and allows dynamic CEL expressions.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/$defs/Expression"
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false,
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "invalid"
+          ]
+        },
+        {
+          "description": "Service reference. Service must be defined in the top level services list.",
+          "type": "object",
+          "properties": {
+            "service": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "$ref": "#/$defs/NamespacedHostname"
+                },
+                "port": {
+                  "type": "integer",
+                  "format": "uint16",
+                  "minimum": 0,
+                  "maximum": 65535
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "port"
+              ]
+            }
+          },
+          "required": [
+            "service"
+          ]
+        },
+        {
+          "description": "Hostname or IP address",
+          "type": "object",
+          "properties": {
+            "host": {
+              "description": "Hostname or IP address",
+              "type": "string"
+            }
+          },
+          "required": [
+            "host"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "backend": {
+              "description": "Explicit backend reference. Backend must be defined in the top level backends list",
+              "type": "string"
+            }
+          },
+          "required": [
+            "backend"
+          ]
+        }
+      ]
+    },
     "LocalExplicitOrConditional5": {
       "anyOf": [
         {
@@ -5446,6 +5542,18 @@
             }
           ],
           "default": null
+        },
+        "extMcp": {
+          "description": "Extend agentgateway with an MCP external processor",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtMcp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "additionalProperties": false
@@ -5937,6 +6045,18 @@
           ],
           "default": null
         },
+        "extMcp": {
+          "description": "Extend agentgateway with an MCP external processor",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtMcp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "a2a": {
           "description": "Mark this traffic as A2A to enable A2A processing and telemetry.",
           "anyOf": [
@@ -6338,6 +6458,18 @@
               "type": "null"
             }
           ]
+        },
+        "extMcp": {
+          "description": "Extend agentgateway with an MCP external processor",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtMcp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "transformations": {
           "description": "Modify requests and responses",
@@ -7634,6 +7766,18 @@
               "type": "null"
             }
           ]
+        },
+        "extMcp": {
+          "description": "Extend agentgateway with an MCP external processor",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtMcp"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "transformations": {
           "description": "Modify requests and responses",

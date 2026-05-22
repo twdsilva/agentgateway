@@ -956,7 +956,10 @@ fn to_header_map_extra(
 	Some(proto::HeaderMap { headers: h })
 }
 
-fn eval_expression(exec: &Executor, v: &Expression) -> Result<prost_wkt_types::Value, ProxyError> {
+pub fn eval_expression(
+	exec: &Executor,
+	v: &Expression,
+) -> Result<prost_wkt_types::Value, ProxyError> {
 	let res = exec.eval(v).map_err(|e| ProxyError::Processing(e.into()))?;
 	let js = res
 		.json()
@@ -964,7 +967,7 @@ fn eval_expression(exec: &Executor, v: &Expression) -> Result<prost_wkt_types::V
 	envoy_proto_common::json_to_prost_value(js)
 }
 
-fn eval_to_struct(
+pub fn eval_to_struct(
 	exec: &Executor<'_>,
 	expressions: &HashMap<String, Arc<cel::Expression>>,
 ) -> Result<prost_wkt_types::Struct, ProxyError> {

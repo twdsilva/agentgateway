@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use agent_core::version::BuildInfo;
 use futures_core::Stream;
+use futures_util::StreamExt;
 use http::StatusCode;
 use http::request::Parts;
 use itertools::Itertools;
@@ -13,7 +14,7 @@ use rmcp::model::{
 	ListPromptsResult, ListResourceTemplatesResult, ListResourcesResult, ListToolsResult,
 	ProtocolVersion, RequestId, ServerCapabilities, ServerInfo, ServerJsonRpcMessage, ServerResult,
 };
-use tracing::{debug, warn};
+use tracing::{debug, trace, warn};
 
 use crate::http::Response;
 use crate::http::sessionpersistence::MCPSession;
@@ -23,7 +24,7 @@ use crate::mcp::rbac::{CelExecWrapper, McpAuthorizationSet};
 use crate::mcp::router::McpBackendGroup;
 use crate::mcp::streamablehttp::ServerSseMessage;
 use crate::mcp::upstream::{IncomingRequestContext, UpstreamError};
-use crate::mcp::{ClientError, FailureMode, MCPInfo, mergestream, rbac, upstream};
+use crate::mcp::{ClientError, FailureMode, MCPInfo, ext_mcp, mergestream, rbac, upstream};
 use crate::proxy::httpproxy::PolicyClient;
 use crate::telemetry::log::{AsyncLog, SpanWriteOnDrop, SpanWriter};
 
@@ -57,17 +58,20 @@ fn resource_uri(default_target_name: Option<&String>, target: &str, uri: &str) -
 pub struct Relay {
 	upstreams: Arc<upstream::UpstreamGroup>,
 	pub policies: McpAuthorizationSet,
+	pub ext_mcp: Option<ext_mcp::ExtMcp>,
+	pub client: PolicyClient,
 }
 
 pub struct RelayInputs {
 	pub backend: McpBackendGroup,
 	pub policies: McpAuthorizationSet,
+	pub ext_mcp: Option<ext_mcp::ExtMcp>,
 	pub client: PolicyClient,
 }
 
 impl RelayInputs {
 	pub fn build_new_connections(self) -> Result<Relay, mcp::Error> {
-		Relay::new(self.backend, self.policies, self.client)
+		Relay::new(self.backend, self.policies, self.ext_mcp, self.client)
 	}
 }
 
@@ -75,17 +79,22 @@ impl Relay {
 	pub fn new(
 		backend: McpBackendGroup,
 		policies: McpAuthorizationSet,
+		ext_mcp: Option<ext_mcp::ExtMcp>,
 		client: PolicyClient,
 	) -> Result<Self, mcp::Error> {
 		Ok(Self {
-			upstreams: Arc::new(upstream::UpstreamGroup::new(client, backend)?),
+			upstreams: Arc::new(upstream::UpstreamGroup::new(client.clone(), backend)?),
 			policies,
+			ext_mcp,
+			client,
 		})
 	}
 	pub fn with_policies(&self, policies: McpAuthorizationSet) -> Self {
 		Self {
 			upstreams: self.upstreams.clone(),
 			policies,
+			ext_mcp: self.ext_mcp.clone(),
+			client: self.client.clone(),
 		}
 	}
 
@@ -402,15 +411,43 @@ impl Relay {
 		service_name: &str,
 		mcp_log: Option<AsyncLog<MCPInfo>>,
 	) -> Result<Response, UpstreamError> {
-		let id = r.id.clone();
+		let req = match (&r.request, &self.ext_mcp) {
+			(ClientRequest::CallToolRequest(_), Some(ext_mcp)) => {
+				ext_mcp
+					.mutate_request(service_name, self.client.clone(), r, &ctx)
+					.await?
+			},
+			_ => r,
+		};
+		let id = req.id.clone();
 		let Ok(us) = self.upstreams.get(service_name) else {
 			return Err(UpstreamError::InvalidRequest(format!(
 				"unknown service {service_name}"
 			)));
 		};
-		let stream = us.generic_stream(r, &ctx).await?;
+		let stream = us.generic_stream(req, &ctx).await?;
+		let service_name_owned = service_name.to_string();
 
-		messages_to_response(id, stream, mcp_log)
+		// Add logging for individual service responses in send_single
+		let logged_stream = stream.map(move |rpc_result| {
+			if let Ok(ref rpc) = rpc_result {
+				if let ServerJsonRpcMessage::Response(response) = rpc {
+					if matches!(
+						response.result,
+						ServerResult::ListToolsResult(_) | ServerResult::CallToolResult(_)
+					) {
+						trace!(
+							"Individual response from service '{}' in send_single: {:?}",
+							service_name_owned, response.result
+						);
+						// TODO call the ext_mcp grpc service to transform the response
+					}
+				}
+			}
+			rpc_result
+		});
+
+		messages_to_response(id, logged_stream, mcp_log)
 	}
 	pub async fn send_fanout_deletion(
 		&self,
@@ -506,13 +543,28 @@ impl Relay {
 		let id = r.id.clone();
 		let mut streams = Vec::new();
 
-		let futs: Vec<_> = self
-			.upstreams
-			.iter_named()
-			.map(|(name, con)| {
-				let r = r.clone();
+		// Handle ext_mcp mutations for each upstream if needed
+		let mut upstream_requests = Vec::new();
+		if matches!(r.request, ClientRequest::ListToolsRequest(_)) && self.ext_mcp.is_some() {
+			let ext_mcp = self.ext_mcp.as_ref().unwrap();
+			for (name, _) in self.upstreams.iter_named() {
+				let mutated_req = ext_mcp
+					.mutate_request(name.as_str(), self.client.clone(), r.clone(), &ctx)
+					.await?;
+				upstream_requests.push((name.clone(), mutated_req));
+			}
+		} else {
+			for (name, _) in self.upstreams.iter_named() {
+				upstream_requests.push((name.clone(), r.clone()));
+			}
+		}
+
+		let futs: Vec<_> = upstream_requests
+			.into_iter()
+			.map(|(name, req)| {
+				let con = self.upstreams.get(&name).unwrap();
 				let ctx = &ctx;
-				async move { (name, con.generic_stream(r, ctx).await) }
+				async move { (name, con.generic_stream(req, ctx).await) }
 			})
 			.collect();
 

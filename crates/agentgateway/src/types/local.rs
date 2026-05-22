@@ -912,6 +912,7 @@ impl LocalBackend {
 			.map(|p| LocalBackendPolicies {
 				simple: p.simple,
 				mcp_authorization: p.mcp_authorization,
+				ext_mcp: p.ext_mcp,
 				a2a: None,
 				inference_routing: None,
 				ai: None,
@@ -1391,6 +1392,9 @@ struct LocalGatewayPolicy {
 	/// Extend agentgateway with an external processor
 	#[serde(default)]
 	ext_proc: Option<LocalExtProcPolicy>,
+	/// Extend agentgateway with an MCP external processor
+	#[serde(default)]
+	ext_mcp: Option<crate::mcp::ext_mcp::ExtMcp>,
 	/// Modify requests and responses
 	#[serde(default)]
 	#[cfg_attr(
@@ -1413,6 +1417,7 @@ impl From<LocalGatewayPolicy> for FilterOrPolicy {
 			jwt_auth,
 			ext_authz,
 			ext_proc,
+			ext_mcp,
 			transformations,
 			basic_auth,
 			api_key,
@@ -1422,6 +1427,7 @@ impl From<LocalGatewayPolicy> for FilterOrPolicy {
 			jwt_auth,
 			ext_authz,
 			ext_proc,
+			ext_mcp,
 			transformations,
 			basic_auth,
 			api_key,
@@ -1474,6 +1480,9 @@ pub struct MCPLocalBackendPolicies {
 	/// Authorization policies for MCP access.
 	#[serde(default)]
 	pub mcp_authorization: Option<McpAuthorization>,
+	/// Extend agentgateway with an MCP external processor
+	#[serde(default)]
+	pub ext_mcp: Option<crate::mcp::ext_mcp::ExtMcp>,
 }
 
 #[apply(schema_de!)]
@@ -1501,6 +1510,9 @@ pub struct LocalBackendPolicies {
 	/// Authorization policies for MCP access.
 	#[serde(default)]
 	pub mcp_authorization: Option<McpAuthorization>,
+	/// Extend agentgateway with an MCP external processor
+	#[serde(default)]
+	pub ext_mcp: Option<crate::mcp::ext_mcp::ExtMcp>,
 	/// Mark this traffic as A2A to enable A2A processing and telemetry.
 	#[serde(default)]
 	pub a2a: Option<A2aPolicy>,
@@ -1556,6 +1568,7 @@ impl LocalBackendPolicies {
 					backend_tunnel,
 				},
 			mcp_authorization,
+			ext_mcp,
 			a2a,
 			inference_routing,
 			ai,
@@ -1588,6 +1601,9 @@ impl LocalBackendPolicies {
 		}
 		if let Some(p) = mcp_authorization {
 			pols.push(BackendTrafficPolicy::McpAuthorization(p))
+		}
+		if let Some(p) = ext_mcp {
+			pols.push(BackendTrafficPolicy::ExtMcp(p))
 		}
 		if let Some(p) = a2a {
 			pols.push(BackendTrafficPolicy::A2a(p))
@@ -1752,6 +1768,9 @@ pub struct FilterOrPolicy {
 	/// Extend agentgateway with an external processor
 	#[serde(default)]
 	ext_proc: Option<LocalExtProcPolicy>,
+	/// Extend agentgateway with an MCP external processor
+	#[serde(default)]
+	ext_mcp: Option<crate::mcp::ext_mcp::ExtMcp>,
 	/// Modify requests and responses
 	#[serde(default)]
 	#[cfg_attr(
@@ -2867,6 +2886,7 @@ pub(crate) async fn split_policies(
 		csrf,
 		ext_authz,
 		ext_proc,
+		ext_mcp,
 		timeout,
 		retry,
 	} = pol;
@@ -2920,6 +2940,10 @@ pub(crate) async fn split_policies(
 	}
 	if let Some(p) = backend_auth {
 		backend_policies.push(BackendTrafficPolicy::BackendAuth(p))
+	}
+	if let Some(p) = ext_mcp {
+		trace!("$$$$$$$ adding ext mcp policy to route {:?}", p);
+		backend_policies.push(BackendTrafficPolicy::ExtMcp(p.clone()));
 	}
 
 	// Route policies
